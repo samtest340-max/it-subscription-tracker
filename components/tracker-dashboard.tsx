@@ -61,7 +61,7 @@ export function TrackerDashboard() {
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
-    anchor.download = 'nexus-it-subscriptions.csv'
+    anchor.download = 'farm-alert-it-subscriptions.csv'
     anchor.click()
     URL.revokeObjectURL(url)
   }
@@ -74,7 +74,7 @@ export function TrackerDashboard() {
   return (
     <div className="min-h-screen bg-[#f7f8fa] text-[#17202b]">
       <aside className="fixed inset-y-0 left-0 hidden w-[236px] flex-col border-r border-[#e5e8ed] bg-white lg:flex">
-        <div className="flex h-[76px] items-center gap-3 border-b border-[#eef0f3] px-6"><div className="flex size-9 items-center justify-center rounded-xl bg-[#173f52] text-white"><ShieldCheck size={20} /></div><div><p className="text-[15px] font-bold tracking-tight">Nexus IT</p><p className="text-[11px] text-[#8b95a1]">Subscription hub</p></div></div>
+        <div className="flex h-[76px] items-center gap-3 border-b border-[#eef0f3] px-6"><div className="flex size-9 items-center justify-center rounded-xl bg-[#173f52] text-white"><ShieldCheck size={20} /></div><div><p className="text-[15px] font-bold tracking-tight">farm alert IT</p><p className="text-[11px] text-[#8b95a1]">Subscription hub</p></div></div>
         <nav className="flex flex-1 flex-col gap-1 px-3 py-6"><p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#9ca5af]">Workspace</p><a className="flex items-center gap-3 rounded-lg bg-[#eaf3f4] px-3 py-2.5 text-sm font-semibold text-[#176b71]" href="#"><LayoutDashboard size={17} />Overview</a><a className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#64707e] hover:bg-[#f5f6f8]" href="#subscriptions"><ListFilter size={17} />Subscriptions<span className="ml-auto rounded-md bg-[#f0f2f4] px-1.5 py-0.5 text-[10px] font-semibold">24</span></a><a className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#64707e] hover:bg-[#f5f6f8]" href="#calendar"><CalendarDays size={17} />Renewal calendar</a><a className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#64707e] hover:bg-[#f5f6f8]" href="#forecast"><TrendingUp size={17} />Spend forecast</a><p className="px-3 pb-2 pt-7 text-[10px] font-bold uppercase tracking-[.14em] text-[#9ca5af]">Manage</p><a className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#64707e] hover:bg-[#f5f6f8]" href="#team"><Users size={17} />Team & access</a><a className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#64707e] hover:bg-[#f5f6f8]" href="#settings"><Settings2 size={17} />Settings</a></nav>
         <div className="m-3 rounded-xl bg-[#f3f7f7] p-3.5"><div className="mb-2 flex items-center gap-2 text-xs font-semibold text-[#34565d]"><Sparkles size={14} />Renewal health</div><p className="text-[11px] leading-4 text-[#73848a]">Keep your team ahead of upcoming renewals.</p><div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#dce9e9]"><div className="h-full w-[78%] rounded-full bg-[#299196]" /></div><p className="mt-1.5 text-[10px] text-[#73848a]">78% on track</p></div>
       </aside>
