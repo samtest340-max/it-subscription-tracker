@@ -1,4 +1,4 @@
-import { boolean, date, integer, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, date, integer, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
 export const subscriptions = pgTable('subscriptions', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -21,5 +21,39 @@ export const subscriptions = pgTable('subscriptions', {
   cancelled: boolean('cancelled').notNull().default(false),
   updatedBy: text('updated_by'),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const cameras = pgTable('cameras', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id').notNull(),
+  station: text('station').notNull(),
+  cameraName: text('camera_name').notNull(),
+  cameraId: text('camera_id').notNull(),
+  location: text('location').notNull(),
+  onlineThresholdMinutes: integer('online_threshold_minutes').notNull().default(10),
+  lastSeenAt: timestamp('last_seen_at', { withTimezone: true }),
+  status: text('status').notNull().default('offline'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const cameraReadings = pgTable('camera_readings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  cameraId: uuid('camera_id').notNull(),
+  observedAt: timestamp('observed_at', { withTimezone: true }).notNull(),
+  payload: jsonb('payload').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const cameraIncidents = pgTable('camera_incidents', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  cameraId: uuid('camera_id').notNull(),
+  incidentType: text('incident_type').notNull(),
+  startedAt: timestamp('started_at', { withTimezone: true }).notNull(),
+  resolvedAt: timestamp('resolved_at', { withTimezone: true }),
+  acknowledgedBy: text('acknowledged_by'),
+  acknowledgedAt: timestamp('acknowledged_at', { withTimezone: true }),
+  notes: text('notes'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
