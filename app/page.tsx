@@ -1,5 +1,5 @@
-import { TrackerDashboard } from '@/components/tracker-dashboard'
+import { FarmAlertApp } from '@/components/farm-alert-app'
 
 export default function Page() {
-  return <TrackerDashboard />
+  return <FarmAlertApp />
 }

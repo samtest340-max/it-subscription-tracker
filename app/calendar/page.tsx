@@ -1,2 +1,2 @@
-import { CalendarPage } from '@/components/workspace-pages'
+import { CalendarPage } from '@/components/route-pages'
 export default function Page() { return <CalendarPage /> }

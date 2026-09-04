@@ -1,2 +1,2 @@
-import { SubscriptionsPage } from '@/components/workspace-pages'
+import { SubscriptionsPage } from '@/components/route-pages'
 export default function Page() { return <SubscriptionsPage /> }
