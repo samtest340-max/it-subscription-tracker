@@ -10,10 +10,10 @@ export type RenewalEmail = {
 }
 
 export async function sendRenewalEmail(email: RenewalEmail) {
-  const apiKey = process.env.BREVO_API_KEY
-  const senderEmail = process.env.BREVO_SENDER_EMAIL
+  const apiKey = process.env.SENDINBLUE_API_TOKEN
+  const senderEmail = 'samtest340@gmail.com'
 
-  if (!apiKey || !senderEmail) {
+  if (!apiKey) {
     throw new Error('Brevo email configuration is missing')
   }
 
