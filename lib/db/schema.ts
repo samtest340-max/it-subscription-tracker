@@ -57,3 +57,24 @@ export const cameraIncidents = pgTable('camera_incidents', {
   notes: text('notes'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
+
+export const backupEvents = pgTable('backup_events', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id').notNull(),
+  backupType: text('backup_type').notNull(),
+  scheduledFor: timestamp('scheduled_for', { withTimezone: true }).notNull(),
+  completedAt: timestamp('completed_at', { withTimezone: true }),
+  status: text('status').notNull().default('pending'),
+  provider: text('provider').notNull().default('n8n'),
+  notes: text('notes'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const notificationDeliveries = pgTable('notification_deliveries', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id'),
+  notificationType: text('notification_type').notNull(),
+  recipientCount: integer('recipient_count').notNull().default(0),
+  payload: jsonb('payload').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
