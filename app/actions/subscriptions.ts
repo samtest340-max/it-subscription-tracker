@@ -36,7 +36,6 @@ export async function createSubscription(input: CreateSubscriptionInput) {
     renewalCost: renewalCost.toString(),
     currency: currency || 'NGN',
     startDate: startDate.toISOString().slice(0, 10),
-    expirationDate,
     durationDays,
     seats: 1,
     autoRenewal: false,
