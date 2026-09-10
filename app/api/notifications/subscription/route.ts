@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       },
     })
 
-    return NextResponse.json({ ok: true, forwarded: true, recipientCount: recipients.length, webhook: process.env.N8N_DASHBOARD_ALERT_WEBHOOK_URL ?? 'http://localhost:5678/webhook/dashboard-alert', n8nStatus: forwarded.status, n8nResponse: forwarded.result })
+    return NextResponse.json({ ok: true, forwarded: true, recipientCount: recipients.length, webhook: process.env.N8N_DASHBOARD_ALERT_WEBHOOK_URL ?? 'https://playpen-glandular-refinery.ngrok-free.dev/webhook/dashboard-alert', n8nStatus: forwarded.status, n8nResponse: forwarded.result })
   } catch (error) {
     if (error instanceof SyntaxError) return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
     return webhookError(error)
@@ -35,5 +35,5 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json({ endpoint: '/api/notifications/subscription', method: 'POST', required: ['softwareName', 'expirationDate', 'recipients'], forwardsTo: 'http://localhost:5678/webhook/dashboard-alert' })
+  return NextResponse.json({ endpoint: '/api/notifications/subscription', method: 'POST', required: ['softwareName', 'expirationDate', 'recipients'], forwardsTo: process.env.N8N_DASHBOARD_ALERT_WEBHOOK_URL ?? 'https://playpen-glandular-refinery.ngrok-free.dev/webhook/dashboard-alert' })
 }

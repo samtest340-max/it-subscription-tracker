@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-export const N8N_DASHBOARD_ALERT_WEBHOOK = process.env.N8N_DASHBOARD_ALERT_WEBHOOK_URL ?? 'http://localhost:5678/webhook/dashboard-alert'
+export const N8N_DASHBOARD_ALERT_WEBHOOK = process.env.N8N_DASHBOARD_ALERT_WEBHOOK_URL ?? 'https://playpen-glandular-refinery.ngrok-free.dev/webhook/dashboard-alert'
 
 export async function forwardToN8n(payload: Record<string, unknown>) {
   const controller = new AbortController()
