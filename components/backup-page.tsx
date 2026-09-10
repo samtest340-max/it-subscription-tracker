@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { CheckCircle2, Clock3, DatabaseBackup, Download, Plus, RotateCcw, ShieldAlert } from "lucide-react"
 
 const initialEvents = [
@@ -11,7 +11,10 @@ const initialEvents = [
 
 export function BackupPage() {
   const [events, setEvents] = useState(initialEvents)
+  const [stateReady, setStateReady] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  useEffect(() => { try { const saved = window.localStorage.getItem('farm-alert:backup-events'); if (saved) setEvents(JSON.parse(saved)) } catch { /* Keep seeded events if saved browser state is malformed. */ } finally { setStateReady(true) } }, [])
+  useEffect(() => { if (stateReady) window.localStorage.setItem('farm-alert:backup-events', JSON.stringify(events)) }, [events, stateReady])
   const missed = useMemo(() => events.filter((event) => event.status === "Missed"), [events])
   return <div className="flex flex-col gap-5">
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><Metric label="Daily status" value="1 / 1" detail="Completed today" tone="good"/><Metric label="Weekly status" value="1 / 1" detail="Recovery test passed" tone="good"/><Metric label="Missed events" value={String(missed.length)} detail="Needs administrator review" tone={missed.length ? "bad" : "good"}/><Metric label="Next scheduled" value="00:00 WAT" detail="Tomorrow · daily backup" tone="neutral"/></div>
