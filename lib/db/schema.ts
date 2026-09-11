@@ -1,5 +1,18 @@
 import { boolean, date, integer, jsonb, numeric, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
+export const websiteUptimeStatus = pgTable('website_uptime_status', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: text('user_id').notNull(),
+  websiteName: text('website_name').notNull(),
+  websiteUrl: text('website_url').notNull(),
+  status: text('status').notNull(),
+  errorMessage: text('error_message'),
+  httpStatus: integer('http_status'),
+  responseTimeMs: integer('response_time_ms'),
+  checkedAt: timestamp('checked_at', { withTimezone: true }).notNull(),
+  receivedAt: timestamp('received_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 export const subscriptions = pgTable('subscriptions', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id').notNull(),
