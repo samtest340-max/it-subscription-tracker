@@ -18,7 +18,7 @@ export function AdminLogin() {
     setLoading(true)
     const email = username.trim().toLowerCase() === "fa-tech-team" ? "sammyfemi18@gmail.com" : username.trim()
     let result = await signIn.email({ email, password })
-    if (result.error && username.trim().toLowerCase() === "fa-tech-team" && password === "Fapassword") {
+    if (result.error && username.trim().toLowerCase() === "fa-tech-team" && password === "Fa@it-dashpass") {
       await fetch("/api/auth/sign-up/email", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name: "FA-Tech-Team", email, password }) })
       result = await signIn.email({ email, password })
     }
