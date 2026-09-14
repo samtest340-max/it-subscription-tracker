@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server'
+import { headers } from 'next/headers'
 import { desc, eq } from 'drizzle-orm'
+import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { websiteUptimeStatus } from '@/lib/db/schema'
 
+// n8n posts here directly; dashboard reads remain protected by the authenticated UI.
 const defaultUserId = 'dashboard'
 
 export async function GET() {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const rows = await db.select().from(websiteUptimeStatus).where(eq(websiteUptimeStatus.userId, defaultUserId)).orderBy(desc(websiteUptimeStatus.receivedAt))
   const latest = Array.from(new Map(rows.map((row) => [row.websiteUrl, row])).values()).sort((a, b) => new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime())
   return NextResponse.json({ websites: latest })

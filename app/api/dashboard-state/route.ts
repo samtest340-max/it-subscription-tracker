@@ -20,6 +20,11 @@ export async function POST(request: Request) {
     const [created] = await db.insert(cameras).values({ userId, station: String(camera.station ?? 'Unknown'), cameraName: String(camera.name ?? 'Camera'), cameraId: String(camera.id ?? crypto.randomUUID()), location: String(camera.location ?? ''), status: String(camera.status ?? 'offline') }).returning()
     return NextResponse.json({ camera: created }, { status: 201 })
   }
+  if (body.type === 'backup') {
+    const event = body.event ?? {}
+    const [created] = await db.insert(backupEvents).values({ userId, backupType: String(event.type ?? 'Daily backup'), scheduledFor: new Date(event.scheduledFor ?? Date.now()), completedAt: event.completedAt ? new Date(event.completedAt) : new Date(), status: String(event.status ?? 'completed').toLowerCase(), provider: String(event.provider ?? 'Manual / n8n'), notes: event.notes ? String(event.notes) : null }).returning()
+    return NextResponse.json({ backup: created }, { status: 201 })
+  }
   return NextResponse.json({ error: 'Unsupported state type' }, { status: 400 })
 }
 
