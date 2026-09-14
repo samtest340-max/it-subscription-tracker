@@ -1,6 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
+import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { subscriptions } from '@/lib/db/schema'
 
@@ -29,8 +31,11 @@ export async function createSubscription(input: CreateSubscriptionInput) {
   const startDate = new Date()
   const durationDays = Math.max(1, Math.ceil((expiration.getTime() - startDate.getTime()) / 86400000))
 
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session?.user?.id) throw new Error('Unauthorized')
+
   await db.insert(subscriptions).values({
-    userId: 'preview-user',
+    userId: session.user.id,
     softwareName,
     category,
     renewalCost: renewalCost.toString(),
