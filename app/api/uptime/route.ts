@@ -20,7 +20,7 @@ export async function GET() {
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const rows = await db.select().from(websiteUptimeStatus).where(eq(websiteUptimeStatus.userId, defaultUserId)).orderBy(desc(websiteUptimeStatus.receivedAt))
   const latest = Array.from(new Map(rows.map((row) => [row.websiteUrl, row])).values()).sort((a, b) => new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime())
-  return NextResponse.json({ websites: latest })
+  return NextResponse.json({ websites: latest }, { headers: { 'Cache-Control': 'no-store' } })
 }
 
 export async function POST(request: Request) {
