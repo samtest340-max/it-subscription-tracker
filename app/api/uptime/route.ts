@@ -7,7 +7,7 @@ const defaultUserId = 'dashboard'
 
 export async function GET() {
   const rows = await db.select().from(websiteUptimeStatus).where(eq(websiteUptimeStatus.userId, defaultUserId)).orderBy(desc(websiteUptimeStatus.receivedAt))
-  const latest = Array.from(new Map(rows.map((row) => [row.websiteUrl, row])).values())
+  const latest = Array.from(new Map(rows.map((row) => [row.websiteUrl, row])).values()).sort((a, b) => new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime())
   return NextResponse.json({ websites: latest })
 }
 
