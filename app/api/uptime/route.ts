@@ -26,7 +26,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const items = Array.isArray(body.websites) ? body.websites : Array.isArray(body.data) ? body.data : [body]
+    const items = Array.isArray(body.websites) ? body.websites : Array.isArray(body.data) ? body.data : body.site ? [body.site] : [body]
     if (!items.length || (items.length === 1 && !items[0]?.name && !items[0]?.websiteName)) return NextResponse.json({ error: 'At least one website status is required.' }, { status: 400 })
     const values = items.map((item) => {
       const name = item.name ?? item.websiteName
@@ -37,8 +37,23 @@ export async function POST(request: Request) {
       if (Number.isNaN(checkedDate.getTime())) throw new Error('checkedAt must be a valid ISO date.')
       return { userId: defaultUserId, websiteName: String(name), websiteUrl: String(url), status: String(item.status).toLowerCase(), errorMessage: item.errorMessage ?? item.error ?? null, httpStatus: item.httpStatus == null ? null : Number(item.httpStatus), responseTimeMs: item.responseTimeMs == null ? null : Number(item.responseTimeMs), checkedAt: checkedDate }
     })
-    const inserted = await db.insert(websiteUptimeStatus).values(values).returning()
-    return NextResponse.json({ ok: true, received: inserted.length, websites: inserted })
+    const saved = []
+    for (const value of values) {
+      const [row] = await db.insert(websiteUptimeStatus).values(value).onConflictDoUpdate({
+        target: [websiteUptimeStatus.userId, websiteUptimeStatus.websiteUrl],
+        set: {
+          websiteName: value.websiteName,
+          status: value.status,
+          errorMessage: value.errorMessage,
+          httpStatus: value.httpStatus,
+          responseTimeMs: value.responseTimeMs,
+          checkedAt: value.checkedAt,
+          receivedAt: new Date(),
+        },
+      }).returning()
+      saved.push(row)
+    }
+    return NextResponse.json({ ok: true, received: saved.length, websites: saved })
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Invalid uptime payload.' }, { status: 400 })
   }
