@@ -8,8 +8,8 @@ export async function POST(request: Request) {
       ? payload.recipients.filter((recipient: unknown) => typeof recipient === 'string' && recipient.includes('@'))
       : []
 
-    if (!payload.softwareName || !payload.expirationDate || recipients.length === 0) {
-      return NextResponse.json({ error: 'softwareName, expirationDate, and at least one valid recipient are required' }, { status: 400 })
+    if (!payload.softwareName || !payload.expirationDate) {
+      return NextResponse.json({ error: 'softwareName and expirationDate are required' }, { status: 400 })
     }
 
     const forwarded = await forwardToN8n({
@@ -35,5 +35,5 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  return NextResponse.json({ endpoint: '/api/notifications/subscription', method: 'POST', required: ['softwareName', 'expirationDate', 'recipients'], forwardsTo: process.env.N8N_DASHBOARD_ALERT_WEBHOOK_URL ?? 'https://playpen-glandular-refinery.ngrok-free.dev/webhook/dashboard-alert' })
+  return NextResponse.json({ endpoint: '/api/notifications/subscription', method: 'POST', required: ['softwareName', 'expirationDate'], forwardsTo: process.env.N8N_DASHBOARD_ALERT_WEBHOOK_URL ?? 'https://playpen-glandular-refinery.ngrok-free.dev/webhook/dashboard-alert' })
 }
