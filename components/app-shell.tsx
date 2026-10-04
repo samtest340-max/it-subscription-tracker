@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, CalendarDays, Camera, ClipboardList, LayoutDashboard, Settings, ShieldCheck, Users, X } from "lucide-react"
+import { Bell, CalendarDays, Camera, ClipboardList, LayoutDashboard, Palette, Settings, ShieldCheck, Users, X } from "lucide-react"
 import type { ReactNode } from "react"
 
 const nav = [
@@ -10,6 +10,7 @@ const nav = [
   { href: "/subscriptions", label: "Subscriptions", icon: ClipboardList },
   { href: "/cameras", label: "Camera status", icon: Camera },
   { href: "/team", label: "Team & approvals", icon: Users },
+  { href: "/branding-requests", label: "Branding requests", icon: Palette },
 ]
 
 export function AppShell({ children, title = "Dashboard" }: { children: ReactNode; title?: string }) {
