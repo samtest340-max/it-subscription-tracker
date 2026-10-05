@@ -106,6 +106,16 @@ export const brandingRequests = pgTable('branding_requests', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+export const workspaceMembers = pgTable('workspace_members', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  role: text('role').notNull().default('Viewer'),
+  accessPages: jsonb('access_pages').notNull().default([]),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 export const notificationDeliveries = pgTable('notification_deliveries', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id'),
