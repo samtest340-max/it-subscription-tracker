@@ -6,7 +6,6 @@ export {
   CalendarPage,
   LoginPage,
   SettingsPage,
-  TeamPage,
 } from './workspace-pages'
 
 export { BrandingRequestsPage }
