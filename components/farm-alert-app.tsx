@@ -6,7 +6,7 @@ import { UptimePage } from "@/components/uptime-page"
 import { createSubscription } from "@/app/actions/subscriptions"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Activity, Bell, CalendarDays, Camera, Check, CheckCircle2, ChevronRight, CircleHelp, CloudDownload, Database, DatabaseBackup, Download, FileText, LayoutDashboard, LifeBuoy, LogOut, Menu, MoreHorizontal, Plus, Search, Settings, ShieldCheck, SlidersHorizontal, Users, X } from "lucide-react"
+import { Activity, Bell, CalendarDays, Camera, Check, CheckCircle2, ChevronRight, CircleHelp, CloudDownload, Database, DatabaseBackup, Download, FileText, LayoutDashboard, LifeBuoy, Link as LinkIcon, LogOut, Menu, MoreHorizontal, Palette, Plus, Search, Settings, ShieldCheck, SlidersHorizontal, Users, X } from "lucide-react"
 
 const cameras: { station: string; name: string; id: string; location: string; status: string; seen: string; firmware: string; uptime: string; incidents: number; address: string }[] = [
   { station: "North Field", name: "Camera 01", id: "CAM-NF-001", location: "North perimeter", status: "online", seen: "2 min ago", firmware: "pending", uptime: "—", incidents: 0, address: "pending connection" },
@@ -23,6 +23,10 @@ const nav = [
   { href: "/cameras", label: "Camera status", icon: Camera },
   { href: "/backups", label: "Backup & recovery", icon: DatabaseBackup },
   { href: "/uptime", label: "Website uptime", icon: Activity },
+  { href: "/team", label: "Team & approvals", icon: Users },
+  { href: "/branding-requests", label: "Branding requests", icon: Palette },
+  { href: "/admin", label: "Admin center", icon: ShieldCheck, adminOnly: true },
+  { href: "/settings", label: "Settings", icon: Settings, adminOnly: true },
 ]
 
 export function FarmAlertApp({ page = "overview" }: { page?: string }) {
