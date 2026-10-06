@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const publicPaths = ["/login", "/reset-password", "/api/auth", "/api/uptime"]
+const publicPaths = ["/login", "/reset-password", "/api/auth", "/api/uptime", "/branding-request", "/api/branding-requests"]
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
@@ -11,4 +11,4 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next()
 }
 
-export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"] }
+export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico|branding-request(?:/.*)?|api/branding-requests(?:/.*)?).*)"] }

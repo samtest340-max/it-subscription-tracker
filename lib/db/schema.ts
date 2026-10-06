@@ -86,6 +86,36 @@ export const backupEvents = pgTable('backup_events', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+export const brandingRequests = pgTable('branding_requests', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  requestCode: text('request_code').notNull().unique(),
+  title: text('title').notNull(),
+  requesterName: text('requester_name').notNull(),
+  requesterEmail: text('requester_email').notNull(),
+  department: text('department').notNull(),
+  requestType: text('request_type').notNull(),
+  priority: text('priority').notNull(),
+  deadline: date('deadline', { mode: 'string' }).notNull(),
+  assignee: text('assignee').notNull().default('Unassigned'),
+  status: text('status').notNull().default('Submitted'),
+  description: text('description').notNull(),
+  audience: text('audience').notNull(),
+  approval: text('approval').notNull(),
+  files: jsonb('files').notNull().default([]),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const workspaceMembers = pgTable('workspace_members', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  role: text('role').notNull().default('Viewer'),
+  accessPages: jsonb('access_pages').notNull().default([]),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 export const notificationDeliveries = pgTable('notification_deliveries', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id'),

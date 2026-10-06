@@ -3,8 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'farm alert IT | Operations Console',
+  description: 'Monitor subscriptions, cameras, backups, and website uptime from one operations dashboard.',
   generator: 'v0.app',
   icons: {
     icon: [

@@ -2,25 +2,31 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Bell, CalendarDays, Camera, ClipboardList, LayoutDashboard, Settings, ShieldCheck, Users, X } from "lucide-react"
+import { useState } from "react"
+import { Bell, CalendarDays, Camera, ClipboardList, DatabaseBackup, Gauge, LayoutDashboard, Menu, Palette, Settings, ShieldCheck, X } from "lucide-react"
 import type { ReactNode } from "react"
 
 const nav = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/", label: "Overview", icon: LayoutDashboard },
   { href: "/subscriptions", label: "Subscriptions", icon: ClipboardList },
   { href: "/cameras", label: "Camera status", icon: Camera },
-  { href: "/team", label: "Team & approvals", icon: Users },
+  { href: "/branding-requests", label: "Branding requests", icon: Palette },
+  { href: "/backups", label: "Backup & recovery", icon: DatabaseBackup },
+  { href: "/uptime", label: "Website uptime", icon: Gauge },
+  { href: "/admin", label: "Admin center", icon: ShieldCheck },
+  { href: "/settings", label: "Settings", icon: Settings },
 ]
 
 export function AppShell({ children, title = "Dashboard" }: { children: ReactNode; title?: string }) {
   const pathname = usePathname()
+  const [menuOpen, setMenuOpen] = useState(false)
   return <div className="min-h-screen bg-[#f7f9fa] text-[#26343c]">
-    <aside className="fixed inset-y-0 left-0 z-20 hidden w-[238px] border-r border-[#e3e8eb] bg-white lg:block">
+    <aside className={`fixed inset-y-0 left-0 z-20 w-[238px] border-r border-[#e3e8eb] bg-white ${menuOpen ? "block" : "hidden"} lg:block`}>
       <div className="flex h-20 items-center gap-3 border-b border-[#edf0f2] px-6"><div className="flex size-9 items-center justify-center rounded-xl bg-[#176b71] text-white"><ShieldCheck size={20}/></div><div><p className="text-[15px] font-extrabold tracking-tight">farm alert IT</p><p className="text-[10px] font-semibold uppercase tracking-[.16em] text-[#91a0a7]">Operations hub</p></div></div>
-      <nav className="flex flex-col gap-1 p-4">{nav.map(({href,label,icon:Icon}) => <Link key={href} href={href} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold ${pathname === href ? "bg-[#e9f4f3] text-[#176b71]" : "text-[#74818a] hover:bg-[#f5f7f8]"}`}><Icon size={17}/>{label}</Link>)}<div className="my-4 border-t border-[#edf0f2]"/><Link href="/admin" className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold ${pathname === "/admin" ? "bg-[#e9f4f3] text-[#176b71]" : "text-[#74818a] hover:bg-[#f5f7f8]"}`}><ShieldCheck size={17}/>Admin center</Link><Link href="/settings" className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold ${pathname === "/settings" ? "bg-[#e9f4f3] text-[#176b71]" : "text-[#74818a] hover:bg-[#f5f7f8]"}`}><Settings size={17}/>Settings</Link></nav>
+      <nav className="flex flex-col gap-1 p-4"><p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[.16em] text-[#9aa5ab]">Workspace</p>{nav.map(({href,label,icon:Icon}) => <Link key={href} href={href} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold ${pathname === href ? "bg-[#e9f4f3] text-[#176b71]" : "text-[#74818a] hover:bg-[#f5f7f8]"}`}><Icon size={17}/>{label}</Link>)} </nav>
       <div className="absolute bottom-5 left-4 right-4 rounded-xl bg-[#f0f6f5] p-3 text-xs text-[#668084]"><p className="font-bold text-[#176b71]">WAT timezone active</p><p className="mt-1">All expiry calculations use Africa/Lagos.</p></div>
     </aside>
-    <main className="lg:pl-[238px]"><header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b border-[#e3e8eb] bg-white/95 px-5 backdrop-blur sm:px-8"><div><p className="text-xs font-semibold uppercase tracking-[.15em] text-[#9aa5ab]">{title}</p><h1 className="mt-1 text-xl font-extrabold tracking-tight">{title === "Dashboard" ? "Good Day, Team" : title}</h1></div><div className="flex items-center gap-3"><Link href="/settings" className="rounded-lg p-2 text-[#829099] hover:bg-[#f4f6f7]"><Bell size={18}/></Link><Link href="/admin" className="flex items-center gap-2 rounded-full border border-[#e3e8eb] bg-white px-2.5 py-1.5 text-xs font-bold"><span className="flex size-7 items-center justify-center rounded-full bg-[#dcefed] text-[#176b71]">SR</span><span className="hidden sm:inline">Sam Rivera</span></Link></div></header><div className="p-5 sm:p-8">{children}</div></main>
+    <main className="lg:pl-[238px]"><header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b border-[#e3e8eb] bg-white/95 px-5 backdrop-blur sm:px-8"><div className="flex items-center gap-3"><button onClick={() => setMenuOpen((open) => !open)} className="rounded-lg p-2 text-[#176b71] lg:hidden" aria-label="Open menu"><Menu size={20}/></button><div><p className="text-xs font-semibold uppercase tracking-[.15em] text-[#9aa5ab]">{title}</p><h1 className="mt-1 text-xl font-extrabold tracking-tight">{title === "Dashboard" ? "Good Day, Team" : title}</h1></div></div><div className="flex items-center gap-3"><Link href="/settings" className="rounded-lg p-2 text-[#829099] hover:bg-[#f4f6f7]"><Bell size={18}/></Link><Link href="/admin" className="flex items-center gap-2 rounded-full border border-[#e3e8eb] bg-white px-2.5 py-1.5 text-xs font-bold"><span className="flex size-7 items-center justify-center rounded-full bg-[#dcefed] text-[#176b71]">SR</span><span className="hidden sm:inline">Sam Rivera</span></Link></div></header><div className="p-5 sm:p-8">{children}</div></main>
   </div>
 }
 
