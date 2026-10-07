@@ -11,4 +11,4 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next()
 }
 
-export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico|branding-request(?:/.*)?|api/branding-requests(?:/.*)?|onboarding/[^/]+|api/onboarding/public(?:/.*)?).*)"] }
+export const config = { matcher: ["/((?!_next/static|_next/image|favicon.ico|farm-alert-logo\.png|icon\.png|apple-icon\.png|branding-request(?:/.*)?|api/branding-requests(?:/.*)?|onboarding/[^/]+|api/onboarding/public(?:/.*)?).*)"] }

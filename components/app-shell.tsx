@@ -23,7 +23,7 @@ export function AppShell({ children, title = "Dashboard" }: { children: ReactNod
   const [menuOpen, setMenuOpen] = useState(false)
   return <div className="min-h-screen bg-[#f7f9fa] text-[#26343c]">
     <aside className={`fixed inset-y-0 left-0 z-20 w-[238px] border-r border-[#e3e8eb] bg-white ${menuOpen ? "block" : "hidden"} lg:block`}>
-      <div className="flex h-20 items-center gap-3 border-b border-[#edf0f2] px-6"><div className="flex size-9 items-center justify-center rounded-xl bg-[#176b71] text-white"><ShieldCheck size={20}/></div><div><p className="text-[15px] font-extrabold tracking-tight">farm alert IT</p><p className="text-[10px] font-semibold uppercase tracking-[.16em] text-[#91a0a7]">Operations hub</p></div></div>
+      <div className="flex h-20 items-center gap-3 border-b border-[#edf0f2] px-5"><img src="/farm-alert-logo.png" alt="Farm Alert" className="h-14 w-[180px] object-cover object-center" /><div className="sr-only"><p>Farm Alert Tech</p><p>Operations hub</p></div></div>
       <nav className="flex flex-col gap-1 p-4"><p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[.16em] text-[#9aa5ab]">Workspace</p>{nav.map(({href,label,icon:Icon}) => <Link key={href} href={href} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold ${pathname === href ? "bg-[#e9f4f3] text-[#176b71]" : "text-[#74818a] hover:bg-[#f5f7f8]"}`}><Icon size={17}/>{label}</Link>)} </nav>
       <div className="absolute bottom-5 left-4 right-4 rounded-xl bg-[#f0f6f5] p-3 text-xs text-[#668084]"><p className="font-bold text-[#176b71]">WAT timezone active</p><p className="mt-1">All expiry calculations use Africa/Lagos.</p></div>
     </aside>
