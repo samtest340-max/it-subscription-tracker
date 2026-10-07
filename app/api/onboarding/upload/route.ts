@@ -1,0 +1,6 @@
+import { put } from '@vercel/blob'
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+
+export async function POST(request: NextRequest) { const session = await auth.api.getSession({ headers: await headers() }); if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 }); const form = await request.formData(); const file = form.get('file'); if (!(file instanceof File)) return NextResponse.json({ error: 'File required' }, { status: 400 }); if (file.size > 20 * 1024 * 1024) return NextResponse.json({ error: 'File must be 20MB or smaller' }, { status: 400 }); const allowed = ['image/png','image/jpeg','image/svg+xml','application/pdf','application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']; if (!allowed.includes(file.type)) return NextResponse.json({ error: 'Unsupported file type' }, { status: 400 }); const blob = await put(`onboarding/${session.user.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '-')}`, file, { access: 'public' }); return NextResponse.json({ url: blob.url, pathname: blob.pathname, fileName: file.name, fileType: file.type, fileSize: file.size }) }
