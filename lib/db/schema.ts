@@ -116,6 +116,22 @@ export const workspaceMembers = pgTable('workspace_members', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+export const onboardingPages = pgTable('onboarding_pages', {
+  id: uuid('id').defaultRandom().primaryKey(), userId: text('user_id').notNull(), token: text('token').notNull().unique(), isLive: boolean('is_live').notNull().default(true), companyName: text('company_name').notNull().default('Farm Alert'), tagline: text('tagline'), logoUrl: text('logo_url'), accentColor: text('accent_color').notNull().default('#176b71'), headline: text('headline').notNull().default('Welcome to Farm Alert'), welcomeMessage: text('welcome_message').notNull().default('We are excited to have you join the team.'), additionalInfo: text('additional_info').notNull().default(''), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const onboardingIdentityItems = pgTable('onboarding_identity_items', {
+  id: uuid('id').defaultRandom().primaryKey(), pageId: uuid('page_id').notNull(), itemType: text('item_type').notNull(), imageUrl: text('image_url'), caption: text('caption'), sortOrder: integer('sort_order').notNull().default(0), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => ({ pageTypeIdx: uniqueIndex('onboarding_identity_page_type_idx').on(table.pageId, table.itemType) }))
+
+export const onboardingDocuments = pgTable('onboarding_documents', {
+  id: uuid('id').defaultRandom().primaryKey(), pageId: uuid('page_id').notNull(), title: text('title').notNull(), description: text('description').notNull().default(''), fileUrl: text('file_url'), fileName: text('file_name'), fileType: text('file_type'), fileSize: integer('file_size'), sortOrder: integer('sort_order').notNull().default(0), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const onboardingTextBlocks = pgTable('onboarding_text_blocks', {
+  id: uuid('id').defaultRandom().primaryKey(), pageId: uuid('page_id').notNull(), title: text('title').notNull(), content: text('content').notNull().default(''), sortOrder: integer('sort_order').notNull().default(0), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 export const notificationDeliveries = pgTable('notification_deliveries', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id'),
