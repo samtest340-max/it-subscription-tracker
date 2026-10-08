@@ -1,22 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 const labels: Record<string, string> = { mission: 'Mission statement', vision: 'Vision statement', values: 'Core values' }
 
-export function PublicOnboarding({ token }: { token: string }) {
-  const [data, setData] = useState<any>(null)
-  const [error, setError] = useState('')
-
-  useEffect(() => {
-    fetch(`/api/onboarding/public/${token}`, { cache: 'no-store' })
-      .then(async (response) => {
-        const json = await response.json()
-        if (!response.ok) throw new Error(json.error)
-        setData(json)
-      })
-      .catch((reason) => setError(reason.message))
-  }, [token])
+export function PublicOnboarding({ initialData }: { initialData: any }) {
+  const data = initialData
+  const error = ''
 
   if (error) return <main className="flex min-h-screen items-center justify-center bg-[#f5f7f6] p-6"><div className="max-w-md rounded-3xl border border-[#dce6e2] bg-white p-8 text-center shadow-sm"><p className="text-xs font-bold uppercase tracking-[0.18em] text-[#176b71]">Farm Alert</p><h1 className="mt-3 text-2xl font-extrabold text-[#183b3b]">Link not valid</h1><p className="mt-2 text-sm leading-6 text-[#687a7a]">This onboarding link is no longer valid. Please ask your company contact for a new link.</p></div></main>
   if (!data) return <main className="flex min-h-screen items-center justify-center bg-[#f5f7f6] text-sm text-[#687a7a]">Loading onboarding page…</main>

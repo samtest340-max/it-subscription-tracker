@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
-import { Bell, CalendarDays, Camera, ClipboardList, DatabaseBackup, Gauge, LayoutDashboard, Menu, Palette, Settings, ShieldCheck, Users, X } from "lucide-react"
+import { Bell, CalendarDays, Camera, ClipboardList, Database, DatabaseBackup, Gauge, LayoutDashboard, Menu, Palette, Settings, ShieldCheck, Users, X } from "lucide-react"
 import type { ReactNode } from "react"
 
 const nav = [
@@ -12,6 +12,7 @@ const nav = [
   { href: "/cameras", label: "Camera status", icon: Camera },
   { href: "/branding-requests", label: "Branding requests", icon: Palette },
   { href: "/onboarding", label: "Onboarding Page Manager", icon: Users },
+  { href: "/catalog-manager", label: "Catalog Manager", icon: Database },
   { href: "/backups", label: "Backup & recovery", icon: DatabaseBackup },
   { href: "/uptime", label: "Website uptime", icon: Gauge },
   { href: "/admin", label: "Admin center", icon: ShieldCheck },
@@ -21,10 +22,10 @@ const nav = [
 export function AppShell({ children, title = "Dashboard" }: { children: ReactNode; title?: string }) {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
-  return <div className="min-h-screen bg-[#f7f9fa] text-[#26343c]">
-    <aside className={`fixed inset-y-0 left-0 z-20 w-[238px] border-r border-[#e3e8eb] bg-white ${menuOpen ? "block" : "hidden"} lg:block`}>
+  return <div className="min-h-screen bg-[radial-gradient(circle_at_88%_0%,rgba(211,244,237,.78),transparent_28%),linear-gradient(135deg,#f8fbfc_0%,#f3f8fb_48%,#f8fbfa_100%)] text-[#26343c]">
+    <aside className={`fixed inset-y-0 left-0 z-20 w-[238px] border-r border-white/60 bg-white/65 shadow-[2px_0_28px_rgba(31,70,90,.08)] backdrop-blur-2xl ${menuOpen ? "block" : "hidden"} lg:block`}>
       <div className="flex h-20 items-center gap-3 border-b border-[#edf0f2] px-5"><img src="/farm-alert-logo.png" alt="Farm Alert" className="h-12 w-[220px] origin-left scale-150 object-contain object-left" /><div className="sr-only"><p>Farm Alert Tech</p><p>Operations hub</p></div></div>
-      <nav className="flex flex-col gap-1 p-4"><p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[.16em] text-[#9aa5ab]">Workspace</p>{nav.map(({href,label,icon:Icon}) => <Link key={href} href={href} className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold ${pathname === href ? "bg-[#e9f4f3] text-[#176b71]" : "text-[#74818a] hover:bg-[#f5f7f8]"}`}><Icon size={17}/>{label}</Link>)} </nav>
+      <nav className="flex flex-col gap-1 p-4"><p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[.16em] text-[#9aa5ab]">Workspace</p>{nav.map(({href,label,icon:Icon}) => <Link key={href} href={href} className={`tactile-control flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold ${pathname === href ? "bg-[#dff3ed] text-[#176b71]" : "text-[#74818a] hover:bg-white/80"}`}><Icon size={17}/>{label}</Link>)} </nav>
       <div className="absolute bottom-5 left-4 right-4 rounded-xl bg-[#f0f6f5] p-3 text-xs text-[#668084]"><p className="font-bold text-[#176b71]">WAT timezone active</p><p className="mt-1">All expiry calculations use Africa/Lagos.</p></div>
     </aside>
     <main className="lg:pl-[238px]"><header className="sticky top-0 z-10 flex h-20 items-center justify-between border-b border-[#e3e8eb] bg-white/95 px-5 backdrop-blur sm:px-8"><div className="flex items-center gap-3"><button onClick={() => setMenuOpen((open) => !open)} className="rounded-lg p-2 text-[#176b71] lg:hidden" aria-label="Open menu"><Menu size={20}/></button><div><p className="text-xs font-semibold uppercase tracking-[.15em] text-[#9aa5ab]">{title}</p><h1 className="mt-1 text-xl font-extrabold tracking-tight">{title === "Dashboard" ? "Good Day, Team" : title}</h1></div></div><div className="flex items-center gap-3"><Link href="/settings" className="rounded-lg p-2 text-[#829099] hover:bg-[#f4f6f7]"><Bell size={18}/></Link><Link href="/admin" className="flex items-center gap-2 rounded-full border border-[#e3e8eb] bg-white px-2.5 py-1.5 text-xs font-bold"><span className="flex size-7 items-center justify-center rounded-full bg-[#dcefed] text-[#176b71]">SR</span><span className="hidden sm:inline">Sam Rivera</span></Link></div></header><div className="p-5 sm:p-8">{children}</div></main>
@@ -33,7 +34,7 @@ export function AppShell({ children, title = "Dashboard" }: { children: ReactNod
 
 export function PageIntro({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: ReactNode }) { return <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#176b71]">{eyebrow}</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#26343c]">{title}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#7d8991]">{description}</p></div>{action}</div> }
 
-export function SectionCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) { return <section className="rounded-2xl border border-[#e3e8eb] bg-white p-5 shadow-[0_1px_2px_rgba(20,35,50,.03)]"><div className="mb-5"><h3 className="font-bold">{title}</h3>{description && <p className="mt-1 text-xs text-[#8a969d]">{description}</p>}</div>{children}</section> }
+export function SectionCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) { return <section className="glass-panel rounded-2xl p-5"><div className="mb-5"><h3 className="font-bold">{title}</h3>{description && <p className="mt-1 text-xs text-[#8a969d]">{description}</p>}</div>{children}</section> }
 
 export function StatusPill({ children, tone = "teal" }: { children: ReactNode; tone?: "teal" | "red" | "amber" | "slate" }) { const tones = { teal: "bg-[#e5f5ef] text-[#18765c]", red: "bg-[#fff0f1] text-[#c44857]", amber: "bg-[#fff5e4] text-[#a86b1b]", slate: "bg-[#f0f3f4] text-[#66757e]" }; return <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-bold ${tones[tone]}`}>{children}</span> }
 
