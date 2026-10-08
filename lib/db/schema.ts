@@ -132,6 +132,14 @@ export const onboardingTextBlocks = pgTable('onboarding_text_blocks', {
   id: uuid('id').defaultRandom().primaryKey(), pageId: uuid('page_id').notNull(), title: text('title').notNull(), content: text('content').notNull().default(''), sortOrder: integer('sort_order').notNull().default(0), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+export const catalogSettings = pgTable('catalog_settings', {
+  id: uuid('id').defaultRandom().primaryKey(), userId: text('user_id').notNull().unique(), title: text('title').notNull().default('Farm Alert Product Catalog'), subtitle: text('subtitle').notNull().default('Explore our available products and current pricing.'), logoUrl: text('logo_url'), footerText: text('footer_text').notNull().default('Farm Alert Tech'), accentColor: text('accent_color').notNull().default('#176b71'), visibleColumns: jsonb('visible_columns').notNull().default([]), priceLists: jsonb('price_lists').notNull().default([]), itemGroups: jsonb('item_groups').notNull().default([]), showDisabled: boolean('show_disabled').notNull().default(false), noindex: boolean('noindex').notNull().default(true), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const catalogCache = pgTable('catalog_cache', {
+  id: integer('id').primaryKey(), payload: jsonb('payload').notNull(), fetchedAt: timestamp('fetched_at', { withTimezone: true }).notNull().defaultNow(), errorMessage: text('error_message'),
+})
+
 export const notificationDeliveries = pgTable('notification_deliveries', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id'),
