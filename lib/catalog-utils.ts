@@ -1,0 +1,4 @@
+export type PriceType = 'Retail' | 'Wholesale' | 'Unmapped'
+export type PriceMapping = { value: string; state: string; type: PriceType; manual?: boolean }
+export function parsePriceList(value: unknown): { state: string; type: PriceType } { const text = String(value ?? '').trim(); const lower = text.toLowerCase(); const type: PriceType = lower.includes('retail') ? 'Retail' : lower.includes('wholesale') ? 'Wholesale' : 'Unmapped'; const beforeUnderscore = text.split('_')[0]; const beforeType = text.split(/retail|wholesale/i)[0]; const raw = (text.includes('_') ? beforeUnderscore : beforeType).trim().replace(/[-_]+/g, ' '); const state = raw ? raw.toLowerCase().replace(/\b\w/g, (letter) => letter.toUpperCase()) : 'Unmapped'; return { state, type } }
+export function mappingFor(value: unknown, mappings: PriceMapping[]): PriceMapping { return mappings.find((item) => item.value === String(value ?? '')) ?? { value: String(value ?? ''), ...parsePriceList(value) } }
