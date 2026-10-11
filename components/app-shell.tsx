@@ -6,23 +6,11 @@ import dynamic from "next/dynamic"
 import { useState } from "react"
 import { EffectsToggle, useEffectsMode } from "./effects-toggle"
 import { MotionCard } from "./three-motion"
+import { DashboardSidebar } from "./dashboard-sidebar"
 
 const Dashboard3DScene = dynamic(() => import("./dashboard-3d-scene").then((module) => module.Dashboard3DScene), { ssr: false, loading: () => null })
-import { Bell, CalendarDays, Camera, ClipboardList, Database, DatabaseBackup, Gauge, LayoutDashboard, Menu, Palette, Settings, ShieldCheck, Users, X } from "lucide-react"
+import { Bell, Menu, X } from "lucide-react"
 import type { ReactNode } from "react"
-
-const nav = [
-  { href: "/", label: "Overview", icon: LayoutDashboard },
-  { href: "/subscriptions", label: "Subscriptions", icon: ClipboardList },
-  { href: "/cameras", label: "Camera status", icon: Camera },
-  { href: "/branding-requests", label: "Branding requests", icon: Palette },
-  { href: "/onboarding", label: "Onboarding Page Manager", icon: Users },
-  { href: "/catalog-manager", label: "Catalog Manager", icon: Database },
-  { href: "/backups", label: "Backup & recovery", icon: DatabaseBackup },
-  { href: "/uptime", label: "Website uptime", icon: Gauge },
-  { href: "/admin", label: "Admin center", icon: ShieldCheck },
-  { href: "/settings", label: "Settings", icon: Settings },
-]
 
 export function AppShell({ children, title = "Dashboard" }: { children: ReactNode; title?: string }) {
   const pathname = usePathname()
@@ -32,12 +20,9 @@ export function AppShell({ children, title = "Dashboard" }: { children: ReactNod
   const effectsEnabled = effectsMode !== "Off"
   return <div className={`${effectsEnabled ? "dashboard-effects" : "dashboard-effects effects-off"} min-h-screen bg-[radial-gradient(circle_at_88%_0%,rgba(211,244,237,.78),transparent_28%),linear-gradient(135deg,#f8fbfc_0%,#f3f8fb_48%,#f8fbfa_100%)] text-[#26343c]`}>
     {effectsEnabled && <Dashboard3DScene interactive={effectsMode === "Full"} />}
-    <aside className={`fixed inset-y-0 left-0 top-20 z-40 flex h-[calc(100dvh-5rem)] w-[238px] flex-col overflow-hidden overscroll-contain transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full pointer-events-none"} border-r border-white/60 bg-white/65 shadow-[2px_0_28px_rgba(31,70,90,.08)] backdrop-blur-2xl ${menuOpen ? "block" : "hidden"} lg:flex`}>
-      <div className="flex h-20 shrink-0 items-center gap-3 border-b border-[#edf0f2] px-5"><img src="/farm-alert-logo.png" alt="Farm Alert" className="h-12 w-full max-w-[190px] object-contain object-left" /><div className="sr-only"><p>Farm Alert Tech</p><p>Operations hub</p></div></div>
-      <nav className="sidebar-scroll min-h-0 flex-1 overflow-y-auto overflow-x-hidden p-4"><p className="mb-2 px-3 text-[10px] font-extrabold uppercase tracking-[.16em] text-[#9aa5ab]">Workspace</p>{nav.map(({href,label,icon:Icon}) => <Link key={href} href={href} className={`tactile-control flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold ${pathname === href ? "bg-[#dff3ed] text-[#176b71]" : "text-[#74818a] transition hover:-translate-y-0.5 hover:bg-white/90 hover:text-[#176b71] hover:shadow-[0_8px_18px_rgba(31,70,90,.10)]"}`}><Icon size={17} className="shrink-0"/><span className="min-w-0 truncate">{label}</span></Link>)} </nav>
-      <div className="m-4 mt-auto shrink-0 rounded-xl bg-[#f0f6f5] p-3 text-xs text-[#668084]"><p className="font-bold text-[#176b71]">WAT timezone active</p><p className="mt-1">All expiry calculations use Africa/Lagos.</p></div>
-    </aside>
-    <main className={`transition-[padding] duration-300 ${sidebarOpen ? "lg:pl-[238px]" : "lg:pl-0"}`}><header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-[#e3e8eb] bg-white/95 px-5 backdrop-blur sm:px-8"><div className="flex items-center gap-3"><button onClick={() => { setMenuOpen((open) => !open); setSidebarOpen((open) => !open) }} className="rounded-xl p-2 text-[#176b71] transition hover:bg-[#dff3ed] hover:shadow-sm lg:hidden" aria-label="Open menu"><Menu size={20}/></button><button onClick={() => setSidebarOpen((open) => !open)} className="hidden rounded-xl p-2 text-[#176b71] transition hover:bg-[#dff3ed] hover:shadow-sm lg:inline-flex" aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} title={sidebarOpen ? "Hide sidebar" : "Show sidebar"} aria-expanded={sidebarOpen}>{sidebarOpen ? <><X size={19}/><span className="sr-only">Hide sidebar</span></> : <><Menu size={19}/><span className="sr-only">Show sidebar</span></>}</button><div><p className="text-xs font-semibold uppercase tracking-[.15em] text-[#9aa5ab]">{title}</p><h1 className="mt-1 text-xl font-extrabold tracking-tight">{title === "Dashboard" ? "Good Day, Team" : title}</h1></div></div><div className="flex items-center gap-3"><EffectsToggle value={effectsMode} onChange={setEffectsMode} /><Link href="/settings" className="rounded-lg p-2 text-[#829099] hover:bg-[#f4f6f7]"><Bell size={18}/></Link><Link href="/admin" className="flex items-center gap-2 rounded-full border border-[#e3e8eb] bg-white px-2.5 py-1.5 text-xs font-bold"><span className="flex size-7 items-center justify-center rounded-full bg-[#dcefed] text-[#176b71]">SR</span><span className="hidden sm:inline">Sam Rivera</span></Link></div></header><div className="min-w-0 overflow-x-hidden p-5 sm:p-8">{children}</div></main>
+    <div className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(circle_at_18%_28%,rgba(97,216,157,.08),transparent_22%),radial-gradient(circle_at_82%_72%,rgba(23,107,113,.08),transparent_24%)]" aria-hidden="true" />
+    <DashboardSidebar open={menuOpen} desktopOpen={sidebarOpen} onClose={() => { setMenuOpen(false); setSidebarOpen(false) }} />
+    <main className={`transition-[padding] duration-300 ${sidebarOpen ? "lg:pl-[238px]" : "lg:pl-0"}`}><header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-[#e3e8eb] bg-white/95 px-5 backdrop-blur sm:px-8"><div className="flex items-center gap-3"><button onClick={() => setMenuOpen((open) => !open)} className="rounded-xl p-2 text-[#176b71] transition hover:bg-[#dff3ed] hover:shadow-sm lg:hidden" aria-label="Open menu"><Menu size={20}/></button><button onClick={() => setSidebarOpen((open) => !open)} className="hidden rounded-xl p-2 text-[#176b71] transition hover:bg-[#dff3ed] hover:shadow-sm lg:inline-flex" aria-label={sidebarOpen ? "Hide sidebar" : "Show sidebar"} title={sidebarOpen ? "Hide sidebar" : "Show sidebar"} aria-expanded={sidebarOpen}>{sidebarOpen ? <><X size={19}/><span className="sr-only">Hide sidebar</span></> : <><Menu size={19}/><span className="sr-only">Show sidebar</span></>}</button><div><p className="text-xs font-semibold uppercase tracking-[.15em] text-[#9aa5ab]">{title}</p><h1 className="mt-1 text-xl font-extrabold tracking-tight">{title === "Dashboard" ? "Good Day, Team" : title}</h1></div></div><div className="flex items-center gap-3"><EffectsToggle value={effectsMode} onChange={setEffectsMode} /><Link href="/settings" className="rounded-lg p-2 text-[#829099] hover:bg-[#f4f6f7]"><Bell size={18}/></Link><Link href="/admin" className="flex items-center gap-2 rounded-full border border-[#e3e8eb] bg-white px-2.5 py-1.5 text-xs font-bold"><span className="flex size-7 items-center justify-center rounded-full bg-[#dcefed] text-[#176b71]">SR</span><span className="hidden sm:inline">Sam Rivera</span></Link></div></header><div className="relative z-10 min-w-0 overflow-x-hidden p-5 sm:p-8">{children}</div></main>
   </div>
 }
 
