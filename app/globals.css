@@ -153,7 +153,7 @@
   }
 }
 
-.dashboard-effects { perspective: 1400px; }
+.dashboard-effects { isolation: isolate; }
 .dashboard-effects.effects-off .glass-panel { backdrop-filter: none; box-shadow: 0 1px 2px rgb(20 35 50 / .06); }
 
 .glass-panel { background: color-mix(in srgb, white 72%, transparent); border: 1px solid color-mix(in srgb, white 55%, transparent); box-shadow: 0 24px 70px rgb(9 47 53 / 0.10), inset 0 1px 0 rgb(255 255 255 / 0.78); backdrop-filter: blur(18px); }
@@ -174,9 +174,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid rgb(97 216 157 / .45)
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    @apply bg-background text-foreground;
   }
-  html {
-    overflow-x: hidden;
-  }
+html {
+  overflow-x: clip;
+}
 }
