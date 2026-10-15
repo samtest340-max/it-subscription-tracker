@@ -14,6 +14,16 @@ export type CreateSubscriptionInput = {
   expirationDate: string
 }
 
+export async function deleteSubscription(subscriptionId: string) {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session?.user?.id) throw new Error('Unauthorized')
+  const { eq, and } = await import('drizzle-orm')
+  await db.delete(subscriptions).where(and(eq(subscriptions.id, subscriptionId), eq(subscriptions.userId, session.user.id)))
+  revalidatePath('/')
+  revalidatePath('/subscriptions')
+  return { ok: true }
+}
+
 export async function createSubscription(input: CreateSubscriptionInput) {
   const softwareName = input.softwareName.trim()
   const category = input.category.trim()
