@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { signOut, useSession } from '@/lib/auth-client'
 import { EffectsToggle, useEffectsMode } from './effects-toggle'
 import { MotionCard, CountUp } from './three-motion'
@@ -62,6 +62,7 @@ export function TrackerDashboard() {
   const [view, setView] = useState<'list' | 'calendar'>('list')
   const [effectsMode, setEffectsMode] = useEffectsMode()
   const { data: session } = useSession()
+  useEffect(() => { const refreshStatuses = () => setItems((current) => current.map((item) => { const expiresAt = new Date(item.expires).getTime(); return expiresAt < Date.now() ? { ...item, status: 'Expired', days: Math.ceil((expiresAt - Date.now()) / 86400000) } : { ...item, status: item.status === 'Active' ? 'Active' : 'Expiring Soon', days: Math.ceil((expiresAt - Date.now()) / 86400000) } })) }; refreshStatuses(); const interval = window.setInterval(refreshStatuses, 60000); return () => window.clearInterval(interval) }, [])
   const displayName = session?.user?.name || session?.user?.email?.split('@')[0] || 'Account user'
   const initials = displayName.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase()
 
@@ -99,7 +100,7 @@ export function TrackerDashboard() {
         </div>
       </main>
       {showAdd && <AddSubscriptionDialog onClose={() => setShowAdd(false)} onAdd={(item) => { setItems((current) => [item, ...current]); setShowAdd(false) }} />}
-      {renewing && <RenewDialog name={renewing} onClose={() => setRenewing(null)} onConfirm={(duration) => { setItems((current) => current.map((item) => item.name === renewing ? { ...item, start: 'Sep 03, 2026', expires: duration === '1 year' ? 'Sep 03, 2027' : duration === '6 months' ? 'Mar 03, 2027' : duration === '3 months' ? 'Dec 03, 2026' : 'Oct 03, 2026', days: duration === '1 year' ? 365 : duration === '6 months' ? 181 : duration === '3 months' ? 91 : 30, duration, status: 'Active' } : item)); setRenewing(null) }} />}
+      {renewing && <RenewDialog name={renewing} onClose={() => setRenewing(null)} onConfirm={(duration) => { const start = new Date(); const days = duration === '1 year' ? 365 : duration === '6 months' ? 181 : duration === '3 months' ? 91 : 30; const expires = new Date(start.getTime() + days * 86400000); setItems((current) => current.map((item) => item.name === renewing ? { ...item, start: start.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }), expires: expires.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }), days, duration, status: 'Active' } : item)); setRenewing(null) }} />}
     </div>
   )
 }
