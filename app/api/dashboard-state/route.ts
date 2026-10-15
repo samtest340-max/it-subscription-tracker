@@ -3,7 +3,7 @@ import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { cameras, subscriptions, backupEvents } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { desc } from 'drizzle-orm'
 
 async function getUserId() {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -32,9 +32,9 @@ export async function GET() {
   const userId = await getUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const [subscriptionRows, cameraRows, backupRows] = await Promise.all([
-    db.select().from(subscriptions).where(eq(subscriptions.userId, userId)).orderBy(desc(subscriptions.createdAt)),
-    db.select().from(cameras).where(eq(cameras.userId, userId)).orderBy(desc(cameras.createdAt)),
-    db.select().from(backupEvents).where(eq(backupEvents.userId, userId)).orderBy(desc(backupEvents.createdAt)),
+    db.select().from(subscriptions).orderBy(desc(subscriptions.createdAt)),
+    db.select().from(cameras).orderBy(desc(cameras.createdAt)),
+    db.select().from(backupEvents).orderBy(desc(backupEvents.createdAt)),
   ])
   return NextResponse.json({ subscriptions: subscriptionRows, cameras: cameraRows, backups: backupRows }, { headers: { 'Cache-Control': 'no-store' } })
 }
