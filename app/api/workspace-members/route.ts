@@ -1,3 +1,4 @@
+import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { workspaceMembers } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
@@ -10,8 +11,12 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = await request.json()
-  if (!body.name || !body.email || !body.role) return NextResponse.json({ error: 'Name, email, and role are required.' }, { status: 400 })
-  const [row] = await db.insert(workspaceMembers).values({ name: body.name, email: body.email, role: body.role, accessPages: body.accessPages ?? [] }).returning()
+  if (!body.name || !body.email || !body.role || typeof body.password !== 'string' || body.password.length < 8) return NextResponse.json({ error: 'Name, email, role, and a password of at least 8 characters are required.' }, { status: 400 })
+  const email = String(body.email).trim().toLowerCase()
+  const accountResponse = await auth.api.signUpEmail({ body: { name: body.name, email, password: body.password }, headers: request.headers })
+  if (!accountResponse?.user) return NextResponse.json({ error: 'Unable to create the login account.' }, { status: 400 })
+  const accessPages = [...(Array.isArray(body.accessPages) ? body.accessPages : []), '__must_change_password']
+  const [row] = await db.insert(workspaceMembers).values({ name: body.name, email, role: body.role, accessPages }).returning()
   return NextResponse.json(row, { status: 201 })
 }
 

@@ -27,7 +27,9 @@ export function AdminLogin() {
       setError("Invalid admin credentials.")
       return
     }
-    router.replace("/")
+    const statusResponse = await fetch('/api/account/password-status', { cache: 'no-store' })
+    const status = statusResponse.ok ? await statusResponse.json() : { mustChangePassword: false }
+    router.replace(status.mustChangePassword ? '/change-password' : '/')
     router.refresh()
   }
 
