@@ -1,5 +1,5 @@
 import { auth } from '@/lib/auth'
-import { db } from '@/lib/db'
+import { db, pool } from '@/lib/db'
 import { workspaceMembers } from '@/lib/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
@@ -43,7 +43,32 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   const body = await request.json()
-  if (!body.id && !body.email) return NextResponse.json({ error: 'Member id or email is required.' }, { status: 400 })
-  await db.delete(workspaceMembers).where(body.email ? eq(workspaceMembers.email, body.email) : eq(workspaceMembers.id, body.id))
-  return NextResponse.json({ ok: true })
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
+  if (!body.id && !email) return NextResponse.json({ error: 'Member id or email is required.' }, { status: 400 })
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+    const memberResult = await client.query('SELECT email FROM workspace_members WHERE id = $1 OR lower(email) = $2 LIMIT 1', [body.id ?? null, email])
+    const targetEmail = memberResult.rows[0]?.email ?? email
+    const userResult = await client.query('SELECT id FROM "user" WHERE lower(email) = lower($1) LIMIT 1', [targetEmail])
+    const userId = userResult.rows[0]?.id
+    if (userId) {
+      await client.query('DELETE FROM camera_readings WHERE camera_id IN (SELECT id FROM cameras WHERE user_id = $1)', [userId])
+      await client.query('DELETE FROM camera_incidents WHERE camera_id IN (SELECT id FROM cameras WHERE user_id = $1)', [userId])
+      await client.query('DELETE FROM onboarding_identity_items WHERE page_id IN (SELECT id FROM onboarding_pages WHERE user_id = $1)', [userId])
+      await client.query('DELETE FROM onboarding_documents WHERE page_id IN (SELECT id FROM onboarding_pages WHERE user_id = $1)', [userId])
+      await client.query('DELETE FROM onboarding_text_blocks WHERE page_id IN (SELECT id FROM onboarding_pages WHERE user_id = $1)', [userId])
+      for (const table of ['website_uptime_status', 'subscriptions', 'backup_events', 'catalog_settings', 'notification_deliveries', 'onboarding_pages', 'cameras']) await client.query(`DELETE FROM ${table} WHERE user_id = $1`, [userId])
+      await client.query('DELETE FROM "session" WHERE "userId" = $1', [userId])
+      await client.query('DELETE FROM account WHERE "userId" = $1', [userId])
+      await client.query('DELETE FROM "user" WHERE id = $1', [userId])
+    }
+    await client.query('DELETE FROM workspace_members WHERE lower(email) = lower($1)', [targetEmail])
+    await client.query('COMMIT')
+    return NextResponse.json({ ok: true, deletedEmail: targetEmail })
+  } catch (error) {
+    await client.query('ROLLBACK')
+    console.error('[v0] account deletion failed', error)
+    return NextResponse.json({ error: 'Unable to delete this account and its records.' }, { status: 500 })
+  } finally { client.release() }
 }
