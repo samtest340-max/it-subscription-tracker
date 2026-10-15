@@ -13,7 +13,13 @@ export async function POST(request: Request) {
   const body = await request.json()
   if (!body.name || !body.email || !body.role || typeof body.password !== 'string' || body.password.length < 8) return NextResponse.json({ error: 'Name, email, role, and a password of at least 8 characters are required.' }, { status: 400 })
   const email = String(body.email).trim().toLowerCase()
-  const accountResponse = await auth.api.signUpEmail({ body: { name: body.name, email, password: body.password }, headers: request.headers })
+  let accountResponse
+  try {
+    accountResponse = await auth.api.signUpEmail({ body: { name: String(body.name).trim(), email, password: body.password }, headers: new Headers(request.headers) })
+  } catch (error) {
+    console.error('[v0] team account provisioning failed', error)
+    return NextResponse.json({ error: 'Unable to create the login account. The email may already be registered.' }, { status: 409 })
+  }
   if (!accountResponse?.user) return NextResponse.json({ error: 'Unable to create the login account.' }, { status: 400 })
   const accessPages = [...(Array.isArray(body.accessPages) ? body.accessPages : []), '__must_change_password']
   const [row] = await db.insert(workspaceMembers).values({ name: body.name, email, role: body.role, accessPages }).returning()
