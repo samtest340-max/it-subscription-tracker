@@ -63,7 +63,7 @@ export function TrackerDashboard() {
   const [liveOnboardingUrl, setLiveOnboardingUrl] = useState<string | null>(null)
   const [effectsMode, setEffectsMode] = useEffectsMode()
   const { data: session } = useSession()
-  useEffect(() => { fetch('/api/onboarding', { cache: 'no-store' }).then((response) => response.ok ? response.json() : null).then((data) => { if (data?.page?.token) setLiveOnboardingUrl(`https://tech.farmalert.com.ng/onboarding/${data.page.token}`) }).catch(() => undefined) }, [])
+  useEffect(() => { fetch('/api/onboarding', { cache: 'no-store' }).then((response) => response.ok ? response.json() : null).then((data) => { if (data?.page?.token) setLiveOnboardingUrl(`/onboarding/${data.page.token}`) }).catch(() => undefined) }, [])
   useEffect(() => { const refreshStatuses = () => setItems((current) => current.map((item) => { const expiresAt = new Date(item.expires).getTime(); return expiresAt < Date.now() ? { ...item, status: 'Expired', days: Math.ceil((expiresAt - Date.now()) / 86400000) } : { ...item, status: item.status === 'Active' ? 'Active' : 'Expiring Soon', days: Math.ceil((expiresAt - Date.now()) / 86400000) } })) }; refreshStatuses(); const interval = window.setInterval(refreshStatuses, 60000); return () => window.clearInterval(interval) }, [])
   const displayName = session?.user?.name || session?.user?.email?.split('@')[0] || 'Account user'
   const initials = displayName.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase()
