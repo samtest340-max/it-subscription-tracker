@@ -1,5 +1,21 @@
 import { boolean, date, integer, jsonb, numeric, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
 
+export const employees = pgTable('employees', {
+  id: text('id').primaryKey(),
+  userId: text('userId').notNull(),
+  fullName: text('full_name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone'),
+  department: text('department'),
+  jobTitle: text('job_title'),
+  startDate: date('start_date', { mode: 'string' }),
+  birthday: date('birthday', { mode: 'string' }),
+  pensionProvider: text('pension_provider'),
+  pensionNumber: text('pension_number'),
+  taxId: text('tax_id'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 export const websiteUptimeStatus = pgTable('website_uptime_status', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id').notNull(),
