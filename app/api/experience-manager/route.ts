@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/db"
 import { employees } from "@/lib/db/schema"
-import { asc, eq } from "drizzle-orm"
+import { and, asc, eq } from "drizzle-orm"
 import { headers } from "next/headers"
 
 async function getUserId() {
@@ -17,6 +17,30 @@ export async function GET() {
     const records = await db.select().from(employees).where(eq(employees.userId, userId)).orderBy(asc(employees.fullName))
     return NextResponse.json({ employees: records })
   } catch { return NextResponse.json({ error: "Unauthorized" }, { status: 401 }) }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const userId = await getUserId()
+    const body = await request.json()
+    if (!body.id || !body.fullName?.trim() || !body.email?.trim()) return NextResponse.json({ error: "ID, name and email are required." }, { status: 400 })
+    const [updated] = await db.update(employees).set({ fullName: body.fullName.trim(), email: body.email.trim().toLowerCase(), phone: body.phone?.trim() || null, department: body.department?.trim() || null, jobTitle: body.jobTitle?.trim() || null, startDate: body.startDate || null, birthday: body.birthday || null, pensionProvider: body.pensionProvider?.trim() || null, pensionNumber: body.pensionNumber?.trim() || null, taxId: body.taxId?.trim() || null }).where(and(eq(employees.id, body.id), eq(employees.userId, userId))).returning()
+    if (!updated) return NextResponse.json({ error: "Employee not found." }, { status: 404 })
+    return NextResponse.json({ employee: updated })
+  } catch { return NextResponse.json({ error: "Unable to update employee." }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const userId = await getUserId()
+    const { id } = await request.json()
+    if (!id) return NextResponse.json({ error: "Employee ID is required." }, { status: 400 })
+    const [deleted] = await db.delete(employees).where(and(eq(employees.id, id), eq(employees.userId, userId))).returning({ id: employees.id })
+    if (!deleted) return NextResponse.json({ error: "Employee not found." }, { status: 404 })
+    return NextResponse.json({ ok: true })
+  } catch { return NextResponse.json({ error: "Unable to delete employee." }, { status: 500 })
+  }
 }
 
 export async function POST(request: Request) {
