@@ -27,8 +27,9 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const body = await request.json()
-  if (!body.id && !body.email) return NextResponse.json({ error: 'Member id or email is required.' }, { status: 400 })
+  try {
+    const body = await request.json()
+    if (!body.id && !body.email && !body.lookupEmail) return NextResponse.json({ error: 'Member id or email is required.' }, { status: 400 })
   const [existing] = await db.select({ accessPages: workspaceMembers.accessPages }).where(body.lookupEmail ? eq(workspaceMembers.email, body.lookupEmail) : body.email ? eq(workspaceMembers.email, body.email) : eq(workspaceMembers.id, body.id)).limit(1)
   const requestedPages = Array.isArray(body.accessPages) ? body.accessPages : []
   const accessPages = existing?.accessPages?.includes('__must_change_password') ? [...requestedPages, '__must_change_password'] : requestedPages
@@ -38,7 +39,11 @@ export async function PATCH(request: Request) {
     const [created] = await db.insert(workspaceMembers).values({ name: body.name, email: body.email, role: body.role, accessPages: body.accessPages ?? [] }).onConflictDoUpdate({ target: workspaceMembers.email, set: { name: body.name, role: body.role, accessPages: body.accessPages ?? [], updatedAt: new Date() } }).returning()
     return NextResponse.json(created)
   }
-  return NextResponse.json({ error: 'Member not found.' }, { status: 404 })
+    return NextResponse.json({ error: 'Member not found.' }, { status: 404 })
+  } catch (error) {
+    console.error('[v0] member update failed', error)
+    return NextResponse.json({ error: 'Unable to save member changes.' }, { status: 500 })
+  }
 }
 
 export async function DELETE(request: Request) {
