@@ -1,7 +1,7 @@
 import { auth } from '@/lib/auth'
 import { db, pool } from '@/lib/db'
 import { workspaceMembers } from '@/lib/db/schema'
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, or } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
@@ -30,10 +30,12 @@ export async function PATCH(request: Request) {
   try {
     const body = await request.json()
     if (!body.id && !body.email && !body.lookupEmail) return NextResponse.json({ error: 'Member id or email is required.' }, { status: 400 })
-  const [existing] = await db.select({ accessPages: workspaceMembers.accessPages }).where(body.lookupEmail ? eq(workspaceMembers.email, body.lookupEmail) : body.email ? eq(workspaceMembers.email, body.email) : eq(workspaceMembers.id, body.id)).limit(1)
-  const requestedPages = Array.isArray(body.accessPages) ? body.accessPages : []
-  const accessPages = existing?.accessPages?.includes('__must_change_password') ? [...requestedPages, '__must_change_password'] : requestedPages
-  const [row] = await db.update(workspaceMembers).set({ name: body.name, email: body.email, role: body.role, accessPages, updatedAt: new Date() }).where(body.lookupEmail ? eq(workspaceMembers.email, body.lookupEmail) : body.email ? eq(workspaceMembers.email, body.email) : eq(workspaceMembers.id, body.id)).returning()
+  const lookupEmail = String(body.lookupEmail ?? body.email ?? '').trim().toLowerCase()
+  const requestedPages = Array.isArray(body.accessPages) ? body.accessPages.filter((page: unknown): page is string => typeof page === 'string') : []
+  const [existing] = await db.select({ id: workspaceMembers.id, accessPages: workspaceMembers.accessPages }).from(workspaceMembers).where(body.id ? or(eq(workspaceMembers.id, body.id), eq(workspaceMembers.email, lookupEmail)) : eq(workspaceMembers.email, lookupEmail)).limit(1)
+  if (!existing) return NextResponse.json({ error: 'Member not found.' }, { status: 404 })
+  const accessPages = Array.isArray(existing.accessPages) && existing.accessPages.includes('__must_change_password') ? [...new Set([...requestedPages, '__must_change_password'])] : requestedPages
+  const [row] = await db.update(workspaceMembers).set({ name: String(body.name ?? '').trim(), email: String(body.email ?? lookupEmail).trim().toLowerCase(), role: String(body.role ?? 'Viewer'), accessPages, updatedAt: new Date() }).where(eq(workspaceMembers.id, existing.id)).returning()
   if (row) return NextResponse.json(row)
   if (body.name && body.email && body.role) {
     const [created] = await db.insert(workspaceMembers).values({ name: body.name, email: body.email, role: body.role, accessPages: body.accessPages ?? [] }).onConflictDoUpdate({ target: workspaceMembers.email, set: { name: body.name, role: body.role, accessPages: body.accessPages ?? [], updatedAt: new Date() } }).returning()
