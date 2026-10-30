@@ -122,6 +122,16 @@ export const brandingRequests = pgTable('branding_requests', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
+export const auditEvents = pgTable('audit_events', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  actorName: text('actor_name').notNull(),
+  actorEmail: text('actor_email').notNull(),
+  action: text('action').notNull(),
+  target: text('target').notNull(),
+  details: text('details'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
 export const workspaceMembers = pgTable('workspace_members', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: text('name').notNull(),
