@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { Camera, ClipboardList, Database, DatabaseBackup, Gauge, LayoutDashboard, Palette, Settings, ShieldCheck, Users, UserRoundCog, X } from "lucide-react"
 
 const items = [
-  ["/", "Overview", LayoutDashboard], ["/subscriptions", "Subscriptions", ClipboardList], ["/cameras", "Camera status", Camera], ["/branding-requests", "Branding requests", Palette], ["/onboarding", "Onboarding Page Manager", Users], ["/catalog-manager", "Catalog Manager", Database], ["/experience-manager", "Experience Manager", UserRoundCog], ["/backups", "Backup & recovery", DatabaseBackup], ["/uptime", "Website uptime", Gauge], ["/admin", "Admin center", ShieldCheck], ["/settings", "Settings", Settings],
+  ["/", "Overview", LayoutDashboard], ["/subscriptions", "Subscriptions", ClipboardList], ["/cameras", "Camera status", Camera], ["/branding-requests", "Branding requests", Palette], ["/onboarding", "Onboarding Page Manager", Users], ["/catalog-manager", "Catalog Manager", Database], ["/experience-manager", "Experience Manager", UserRoundCog], ["/attendance", "Employee Attendance Sign-In", ClipboardList], ["/backups", "Backup & recovery", DatabaseBackup], ["/uptime", "Website uptime", Gauge], ["/admin", "Admin center", ShieldCheck], ["/settings", "Settings", Settings],
 ] as const
 
 export function DashboardSidebar({ open, desktopOpen = true, onClose }: { open: boolean; desktopOpen?: boolean; onClose?: () => void }) {
