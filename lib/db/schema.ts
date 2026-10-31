@@ -1,5 +1,12 @@
 import { boolean, date, integer, jsonb, numeric, pgTable, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core'
 
+export const attendance = pgTable('attendance', {
+  id: uuid('id').defaultRandom().primaryKey(), employeeId: text('employee_id').notNull(), attendanceDate: date('attendance_date', { mode: 'string' }).notNull(), signInTime: timestamp('sign_in_time', { withTimezone: true }).notNull(), status: text('status').notNull(), photoPath: text('photo_path'), photoExpiresAt: timestamp('photo_expires_at', { withTimezone: true }), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+export const attendanceFailedAttempts = pgTable('attendance_failed_attempts', { id: uuid('id').defaultRandom().primaryKey(), employeeId: text('employee_id').notNull(), attemptedAt: timestamp('attempted_at', { withTimezone: true }).notNull().defaultNow(), ipAddress: text('ip_address') })
+export const attendanceSettings = pgTable('attendance_settings', { id: uuid('id').defaultRandom().primaryKey(), officialStartTime: text('official_start_time').notNull().default('08:00'), gracePeriodMinutes: integer('grace_period_minutes').notNull().default(60), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow() })
+export const attendanceExceptions = pgTable('attendance_exceptions', { id: uuid('id').defaultRandom().primaryKey(), employeeId: text('employee_id').notNull(), exceptionType: text('exception_type').notNull(), startsOn: date('starts_on', { mode: 'string' }).notNull(), endsOn: date('ends_on', { mode: 'string' }).notNull(), note: text('note'), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow() })
+
 export const employees = pgTable('employees', {
   id: text('id').primaryKey(),
   userId: text('userId').notNull(),
