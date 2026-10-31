@@ -10,6 +10,7 @@ export const employees = pgTable('employees', {
   jobTitle: text('job_title'),
   startDate: date('start_date', { mode: 'string' }),
   birthday: date('birthday', { mode: 'string' }),
+  lastBirthdayEmailSentYear: integer('last_birthday_email_sent_year'),
   pensionProvider: text('pension_provider'),
   pensionNumber: text('pension_number'),
   taxId: text('tax_id'),
