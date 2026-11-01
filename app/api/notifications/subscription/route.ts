@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
-import { forwardToN8n, webhookError } from '@/lib/n8n'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { notificationSettings } from '@/lib/db/schema'
+import { sendResendEmail } from '@/lib/resend'
 
 export async function POST(request: Request) {
   try {
@@ -12,25 +15,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'softwareName and expirationDate are required' }, { status: 400 })
     }
 
-    const forwarded = await forwardToN8n({
-      type: 'renewal_reminder',
-      recipients,
-      subject: `${payload.softwareName} subscription notification`,
-      message: `${payload.softwareName} expires on ${payload.expirationDate}. Renewal cost: ${payload.renewalCost ?? 'Not specified'} ${payload.currency ?? 'NGN'}. Owner: ${payload.owner ?? 'IT Operations'}.`,
-      metadata: {
-        softwareName: payload.softwareName,
-        category: payload.category ?? null,
-        owner: payload.owner ?? null,
-        expirationDate: payload.expirationDate,
-        renewalCost: payload.renewalCost ?? null,
-        currency: payload.currency ?? 'NGN',
-      },
-    })
-
-    return NextResponse.json({ ok: true, forwarded: true, recipientCount: recipients.length, webhook: process.env.N8N_DASHBOARD_ALERT_WEBHOOK_URL ?? 'https://playpen-glandular-refinery.ngrok-free.dev/webhook/dashboard-alert', n8nStatus: forwarded.status, n8nResponse: forwarded.result })
+    const session = await auth.api.getSession({ headers: request.headers }); if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const [settings] = await db.select().from(notificationSettings).limit(1); const configured = Array.isArray(settings?.subscriptionAlertEmails) ? settings.subscriptionAlertEmails.filter((email): email is string => typeof email === 'string' && email.includes('@')) : []; const targets = recipients.length ? recipients : configured
+    if (!targets.length) return NextResponse.json({ error: 'No subscription alert recipients configured.' }, { status: 400 })
+    const subject = `${payload.softwareName} subscription notification`; const message = `${payload.softwareName} expires on ${payload.expirationDate}. Renewal cost: ${payload.renewalCost ?? 'Not specified'} ${payload.currency ?? 'NGN'}. Owner: ${payload.owner ?? 'IT Operations'}.`; await sendResendEmail({ to: targets, subject, html: `<h2>Subscription renewal alert</h2><p>${message}</p>` })
+    return NextResponse.json({ ok: true, sent: true, recipientCount: targets.length })
   } catch (error) {
     if (error instanceof SyntaxError) return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
-    return webhookError(error)
+    console.error('[v0] subscription email failed', error); return NextResponse.json({ error: error instanceof Error ? error.message : 'Unable to send subscription email.' }, { status: 502 })
   }
 }
 

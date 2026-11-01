@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { and, eq, isNull, or } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { employees } from '@/lib/db/schema'
+import { employees, notificationSettings } from '@/lib/db/schema'
+import { sendResendEmail } from '@/lib/resend'
 
 const configuredSender = process.env.RESEND_FROM_EMAIL || process.env.RESEND_SENDER_EMAIL || process.env.RESEND_EMAIL_DOMAIN || 'info@farmalert.com.ng'
 const fromEmail = configuredSender.includes('@') ? configuredSender : configuredSender === 'resend.dev' ? 'onboarding@resend.dev' : `noreply@${configuredSender}`
@@ -28,7 +29,7 @@ async function sendEmail(to: string, name: string) {
 }
 
 export async function GET(request: Request) {
-  if (request.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (process.env.CRON_SECRET && request.headers.get('authorization') !== `Bearer ${process.env.CRON_SECRET}`) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   return sendTodaysBirthdays()
 }
 
@@ -47,10 +48,5 @@ export async function POST(request: Request) {
 }
 
 async function sendTodaysBirthdays() {
-  const now = new Date()
-  const year = now.getFullYear()
-  const records = await db.select().from(employees).where(or(isNull(employees.lastBirthdayEmailSentYear), eq(employees.lastBirthdayEmailSentYear, year - 1)))
-  const results = await Promise.allSettled(records.filter((employee) => birthdayMatchesToday(employee.birthday, now) && employee.email && !employee.email.endsWith('@unprovided.invalid')).map(async (employee) => { await sendEmail(employee.email, firstName(employee.fullName)); await db.update(employees).set({ lastBirthdayEmailSentYear: year }).where(and(eq(employees.id, employee.id), or(isNull(employees.lastBirthdayEmailSentYear), eq(employees.lastBirthdayEmailSentYear, year - 1)))) }))
-  const failed = results.filter((result) => result.status === 'rejected').length
-  return NextResponse.json({ sent: results.length - failed, failed })
+  const now = new Date(); const reminderDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000); const [settings] = await db.select().from(notificationSettings).limit(1); const managerEmail = settings?.birthdayManagerEmail; if (!managerEmail) return NextResponse.json({ sent: 0, failed: 0, skipped: 'No birthday manager email configured.' }); const records = await db.select().from(employees); const upcoming = records.filter((employee) => birthdayMatchesToday(employee.birthday, reminderDate)); const results = await Promise.allSettled(upcoming.map((employee) => sendResendEmail({ to: [managerEmail], subject: `Birthday reminder: ${employee.fullName} is turning up in 2 days`, html: `<h2>Upcoming birthday reminder</h2><p><strong>${employee.fullName}</strong>&apos;s birthday is in 2 days.</p><p>Birthday: ${employee.birthday}</p>` }))); const failed = results.filter((result) => result.status === 'rejected').length; return NextResponse.json({ sent: results.length - failed, failed, recipient: managerEmail })
 }
