@@ -175,6 +175,8 @@ export const catalogCache = pgTable('catalog_cache', {
   id: integer('id').primaryKey(), payload: jsonb('payload').notNull(), fetchedAt: timestamp('fetched_at', { withTimezone: true }).notNull().defaultNow(), errorMessage: text('error_message'),
 })
 
+export const notificationSettings = pgTable('notification_settings', { id: uuid('id').defaultRandom().primaryKey(), birthdayManagerEmail: text('birthday_manager_email'), subscriptionAlertEmails: jsonb('subscription_alert_emails').notNull().default([]), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow() })
+
 export const notificationDeliveries = pgTable('notification_deliveries', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: text('user_id'),
