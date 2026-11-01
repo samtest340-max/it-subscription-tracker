@@ -3,7 +3,9 @@ import { and, eq, isNull, or } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { employees } from '@/lib/db/schema'
 
-const fromEmail = process.env.RESEND_FROM_EMAIL || process.env.RESEND_EMAIL_DOMAIN || 'info@farmalert.com.ng'
+const configuredSender = process.env.RESEND_FROM_EMAIL || process.env.RESEND_SENDER_EMAIL || process.env.RESEND_EMAIL_DOMAIN || 'info@farmalert.com.ng'
+const fromEmail = configuredSender.includes('@') ? configuredSender : `noreply@${configuredSender}`
+const resendApiKey = process.env.RESEND_API_KEY || process.env.RESEND_EMAIL_RESEND_API_KEY
 
 function birthdayMatchesToday(value: string | null, now: Date) {
   if (!value) return false
@@ -20,7 +22,7 @@ function birthdayHtml(name: string) {
 }
 
 async function sendEmail(to: string, name: string) {
-  const response = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: fromEmail, to: [to], subject: `Happy Birthday, ${name}! 🎂`, html: birthdayHtml(name) }) })
+  const response = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: fromEmail, to: [to], subject: `Happy Birthday, ${name}! 🎂`, html: birthdayHtml(name) }) })
   if (!response.ok) throw new Error(await response.text())
 }
 
