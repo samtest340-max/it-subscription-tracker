@@ -6,6 +6,7 @@ export const attendance = pgTable('attendance', {
 export const attendanceFailedAttempts = pgTable('attendance_failed_attempts', { id: uuid('id').defaultRandom().primaryKey(), employeeId: text('employee_id').notNull(), attemptedAt: timestamp('attempted_at', { withTimezone: true }).notNull().defaultNow(), ipAddress: text('ip_address') })
 export const attendanceSettings = pgTable('attendance_settings', { id: uuid('id').defaultRandom().primaryKey(), officialStartTime: text('official_start_time').notNull().default('08:00'), gracePeriodMinutes: integer('grace_period_minutes').notNull().default(60), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(), updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow() })
 export const attendanceExceptions = pgTable('attendance_exceptions', { id: uuid('id').defaultRandom().primaryKey(), employeeId: text('employee_id').notNull(), exceptionType: text('exception_type').notNull(), startsOn: date('starts_on', { mode: 'string' }).notNull(), endsOn: date('ends_on', { mode: 'string' }).notNull(), note: text('note'), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow() })
+export const attendanceHolidays = pgTable('attendance_holidays', { id: uuid('id').defaultRandom().primaryKey(), holidayDate: date('holiday_date', { mode: 'string' }).notNull(), name: text('name').notNull(), createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow() })
 
 export const employees = pgTable('employees', {
   id: text('id').primaryKey(),
