@@ -24,7 +24,7 @@ export async function PATCH(request: Request) {
     const userId = await getUserId()
     const body = await request.json()
     if (!body.id || !body.fullName?.trim() || !body.email?.trim()) return NextResponse.json({ error: "ID, name and email are required." }, { status: 400 })
-    const [updated] = await db.update(employees).set({ fullName: body.fullName.trim(), email: body.email.trim().toLowerCase(), phone: body.phone?.trim() || null, department: body.department?.trim() || null, jobTitle: body.jobTitle?.trim() || null, startDate: body.startDate || null, birthday: body.birthday || null, pensionProvider: body.pensionProvider?.trim() || null, pensionNumber: body.pensionNumber?.trim() || null, taxId: body.taxId?.trim() || null }).where(and(eq(employees.id, body.id), eq(employees.userId, userId))).returning()
+    const [updated] = await db.update(employees).set({ fullName: body.fullName.trim(), email: body.email.trim().toLowerCase(), phone: body.phone?.trim() || null, department: body.department?.trim() || null, jobTitle: body.jobTitle?.trim() || null, startDate: body.startDate || null, birthday: body.birthday ? String(body.birthday).slice(0, 10) : null, pensionProvider: body.pensionProvider?.trim() || null, pensionNumber: body.pensionNumber?.trim() || null, taxId: body.taxId?.trim() || null }).where(and(eq(employees.id, body.id), eq(employees.userId, userId))).returning()
     if (!updated) return NextResponse.json({ error: "Employee not found." }, { status: 404 })
     return NextResponse.json({ employee: updated })
   } catch { return NextResponse.json({ error: "Unable to update employee." }, { status: 500 })
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     const userId = await getUserId()
     const body = await request.json()
     if (!body.fullName?.trim() || !body.email?.trim()) return NextResponse.json({ error: "Name and email are required." }, { status: 400 })
-    const employee = { id: crypto.randomUUID(), userId, fullName: body.fullName.trim(), email: body.email.trim().toLowerCase(), phone: body.phone?.trim() || null, department: body.department?.trim() || null, jobTitle: body.jobTitle?.trim() || null, startDate: body.startDate || null, birthday: body.birthday || null, pensionProvider: body.pensionProvider?.trim() || null, pensionNumber: body.pensionNumber?.trim() || null, taxId: body.taxId?.trim() || null }
+    const employee = { id: crypto.randomUUID(), userId, fullName: body.fullName.trim(), email: body.email.trim().toLowerCase(), phone: body.phone?.trim() || null, department: body.department?.trim() || null, jobTitle: body.jobTitle?.trim() || null, startDate: body.startDate || null, birthday: body.birthday ? String(body.birthday).slice(0, 10) : null, pensionProvider: body.pensionProvider?.trim() || null, pensionNumber: body.pensionNumber?.trim() || null, taxId: body.taxId?.trim() || null }
     const [created] = await db.insert(employees).values(employee).returning()
     return NextResponse.json({ employee: created }, { status: 201 })
   } catch { return NextResponse.json({ error: "Unable to save employee." }, { status: 500 }) }
