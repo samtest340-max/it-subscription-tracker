@@ -4,7 +4,7 @@ import { db } from '@/lib/db'
 import { employees } from '@/lib/db/schema'
 
 const configuredSender = process.env.RESEND_FROM_EMAIL || process.env.RESEND_SENDER_EMAIL || process.env.RESEND_EMAIL_DOMAIN || 'info@farmalert.com.ng'
-const fromEmail = configuredSender.includes('@') ? configuredSender : `noreply@${configuredSender}`
+const fromEmail = configuredSender.includes('@') ? configuredSender : configuredSender === 'resend.dev' ? 'onboarding@resend.dev' : `noreply@${configuredSender}`
 const resendApiKey = process.env.RESEND_API_KEY || process.env.RESEND_EMAIL_RESEND_API_KEY
 
 function birthdayMatchesToday(value: string | null, now: Date) {
@@ -22,6 +22,7 @@ function birthdayHtml(name: string) {
 }
 
 async function sendEmail(to: string, name: string) {
+  if (!resendApiKey) throw new Error('Resend is not configured.')
   const response = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ from: fromEmail, to: [to], subject: `Happy Birthday, ${name}! 🎂`, html: birthdayHtml(name) }) })
   if (!response.ok) throw new Error(await response.text())
 }
